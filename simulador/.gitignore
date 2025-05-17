@@ -1,0 +1,25 @@
+# Ignorar carpeta de compilación
+simulador/build/
+
+# Archivos de VSCode
+.vscode/
+
+# Archivos de CMake generados
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Archivos intermedios de compilación
+*.o
+*.obj
+*.out
+*.a
+*.so
+*.exe
+
+# Archivos temporales y del sistema
+*.log
+*.swp
+*~
+.DS_Store

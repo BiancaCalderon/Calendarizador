@@ -1,7 +1,0 @@
-/home/bianca_cal/Calendarizador/simulador/build/CMakeFiles/simulador.dir
-/home/bianca_cal/Calendarizador/simulador/build/CMakeFiles/edit_cache.dir
-/home/bianca_cal/Calendarizador/simulador/build/CMakeFiles/rebuild_cache.dir
-/home/bianca_cal/Calendarizador/simulador/build/CMakeFiles/list_install_components.dir
-/home/bianca_cal/Calendarizador/simulador/build/CMakeFiles/install.dir
-/home/bianca_cal/Calendarizador/simulador/build/CMakeFiles/install/local.dir
-/home/bianca_cal/Calendarizador/simulador/build/CMakeFiles/install/strip.dir

@@ -1,0 +1,7 @@
+# Formato: <PID>, <BurstTime>, <ArrivalTime>, <Priority>
+# Ejemplo para algoritmo Shortest Remaining Time
+P1, 8, 0, 1
+P2, 4, 1, 2
+P3, 9, 3, 1
+P4, 2, 5, 3
+P5, 6, 6, 2 

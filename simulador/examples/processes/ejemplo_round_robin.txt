@@ -1,0 +1,7 @@
+# Formato: <PID>, <BurstTime>, <ArrivalTime>, <Priority>
+# Ejemplo para algoritmo Round Robin con quantum=2
+P1, 5, 0, 1
+P2, 3, 0, 2
+P3, 8, 2, 3
+P4, 6, 3, 4
+P5, 4, 4, 5 

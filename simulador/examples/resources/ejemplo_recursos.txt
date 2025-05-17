@@ -1,0 +1,5 @@
+# Formato: <NOMBRE_RECURSO>, <CONTADOR>
+# Ejemplo de recursos para sincronizaciu00f3n
+R1, 1
+R2, 3
+R3, 2 

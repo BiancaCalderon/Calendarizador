@@ -1,3 +1,5 @@
+# Install script for directory: /home/bianca_cal/Calendarizador/simulador
+
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX "/usr/local")

@@ -1208,6 +1208,10 @@ CMakeFiles/simulador.dir/src/main.cpp.o
  /home/bianca_cal/Calendarizador/simulador/src/synchronization/sync_mechanism.h
  /home/bianca_cal/Calendarizador/simulador/src/synchronization/semaphore.h
  /home/bianca_cal/Calendarizador/simulador/src/scheduling/priority.h
+ /home/bianca_cal/Calendarizador/simulador/src/scheduling/fifo.h
+ /home/bianca_cal/Calendarizador/simulador/src/scheduling/sjf.h
+ /home/bianca_cal/Calendarizador/simulador/src/scheduling/srt.h
+ /home/bianca_cal/Calendarizador/simulador/src/scheduling/round_robin.h
  /home/bianca_cal/Calendarizador/simulador/src/models/process.h
  /usr/include/c++/11/iostream
  /usr/include/c++/11/ostream

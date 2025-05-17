@@ -1,59 +1,76 @@
-#ifndef SYNC_MECHANISM_H
-#define SYNC_MECHANISM_H
+#include "sync_mechanism.h"
+#include <algorithm>
 
-#include <vector>
-#include <string>
-#include <map>
-#include <queue>
-#include "../models/process.h"
-#include "../models/resource.h"
-#include "../models/action.h"
+SyncMechanism::SyncMechanism()
+    : currentTime(0) {
+}
 
-class SyncMechanism {
-protected:
-    std::vector<Process> processes;      // Lista de procesos
-    std::vector<Resource> resources;     // Lista de recursos
-    std::vector<Action> actions;         // Lista de acciones a realizar
-    std::vector<Action> pendingActions;  // Acciones pendientes de ejecucion
-    std::vector<Action> completedActions; // Acciones completadas
-    int currentTime;                     // Tiempo actual de la simulacion
-    std::map<int, std::string> timeline; // Historial de eventos
+void SyncMechanism::initialize(const std::vector<Process>& processes,
+                               const std::vector<Resource>& resources,
+                               const std::vector<Action>& actions) {
+    this->processes = processes;
+    this->resources = resources;
+    this->actions = actions;
+    
+    reset();
+}
 
-public:
+int SyncMechanism::getCurrentTime() const {
+    return currentTime;
+}
 
-    SyncMechanism();
-    virtual ~SyncMechanism() = default;
+const std::map<int, std::string>& SyncMechanism::getTimeline() const {
+    return timeline;
+}
 
-    virtual void initialize(const std::vector<Process>& processes,
-                           const std::vector<Resource>& resources,
-                           const std::vector<Action>& actions);
-    
-    // Avanzar un ciclo en la simulacion
-    virtual void tick() = 0;
-    
-    // Obtener el tiempo actual
-    int getCurrentTime() const;
-    
-    // Obtener la linea de tiempo para el diagrama de Gantt
-    const std::map<int, std::string>& getTimeline() const;
-    
-    // Verificar si la simulacion ha terminado
-    bool isSimulationFinished() const;
-    
+bool SyncMechanism::isSimulationFinished() const {
+    // La simulaciu00f3n termina cuando todas las acciones han sido completadas
+    return completedActions.size() == actions.size();
+}
 
-    virtual void reset();
+void SyncMechanism::reset() {
+    currentTime = 0;
+    pendingActions.clear();
+    completedActions.clear();
+    timeline.clear();
     
-protected:
-    // Actualizar acciones pendientes para el tiempo actual
-    virtual void updatePendingActions();
-    
+    // Reiniciar los recursos a su estado inicial
+    for (auto& resource : resources) {
+        resource.reset();
+    }
+}
 
-    virtual void processActions() = 0;
-    
-   
-    Resource* getResourceByName(const std::string& name);
-    
-    void updateTimeline(const std::string& processId, ActionStatus status);
-};
+void SyncMechanism::updatePendingActions() {
+    for (const auto& action : actions) {
+        if (action.getCycle() <= currentTime && 
+            std::find_if(pendingActions.begin(), pendingActions.end(),
+                         [&action](const Action& a) {
+                             return a.getProcessId() == action.getProcessId() &&
+                                    a.getResourceName() == action.getResourceName() &&
+                                    a.getCycle() == action.getCycle();
+                         }) == pendingActions.end()) {
+            Action newAction = action;
+            newAction.setStatus(ActionStatus::WAITING);
+            pendingActions.push_back(newAction);
+        }
+    }
+}
 
-#endif // SYNC_MECHANISM_H
+Resource* SyncMechanism::getResourceByName(const std::string& name) {
+    auto it = std::find_if(resources.begin(), resources.end(),
+                         [&name](const Resource& r) {
+                             return r.getName() == name;
+                         });
+    
+    if (it != resources.end()) {
+        return &(*it);
+    }
+    
+    return nullptr;
+}
+
+void SyncMechanism::updateTimeline(const std::string& processId, ActionStatus status) {
+    // Crear una representaciu00f3n visual del evento
+    std::string eventLabel = processId + "|" + Action::actionStatusToString(status);
+    timeline[currentTime] = eventLabel;
+}

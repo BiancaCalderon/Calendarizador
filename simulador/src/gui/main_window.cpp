@@ -21,14 +21,13 @@ void MainWindow::initialize() {
 void MainWindow::run() {
     // bucle para el ciclo de vida del simulador
     while (true) {
-        
         handleEvents();
         
         // Si la simulacion esta en ejecucion, avanzar un paso
         if (isRunning) {
             stepSimulation();
-            
-        render();
+            render();
+        }
     }
 }
 
@@ -104,18 +103,16 @@ void MainWindow::setSimulationSpeed(int speedMs) {
 }
 
 void MainWindow::initializeGUI() {
-
     std::cout << "GUI inicializada en modo " 
-              << (currentMode == SimulationMode::SCHEDULING ? "Calendarizaciu00f3n" : "Sincronizaciu00f3n")
+              << (currentMode == SimulationMode::SCHEDULING ? "Calendarización" : "Sincronización")
               << std::endl;
 }
 
 void MainWindow::handleEvents() {
-  
+    // Manejo de eventos
 }
 
 void MainWindow::render() {
-
     switch (currentMode) {
         case SimulationMode::SCHEDULING:
             schedulingView->render();

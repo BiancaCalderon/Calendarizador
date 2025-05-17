@@ -1203,6 +1203,10 @@ CMakeFiles/simulador.dir/src/main.cpp.o: ../src/main.cpp \
   ../src/synchronization/sync_mechanism.h \
   ../src/synchronization/semaphore.h \
   ../src/scheduling/priority.h \
+  ../src/scheduling/fifo.h \
+  ../src/scheduling/sjf.h \
+  ../src/scheduling/srt.h \
+  ../src/scheduling/round_robin.h \
   ../src/models/process.h \
   /usr/include/c++/11/iostream \
   /usr/include/c++/11/ostream \

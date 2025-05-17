@@ -50,11 +50,13 @@ void SchedulingView::step() {
         return;
     }
     
+    // Avanzar un paso en la simulaciu00f3n
     scheduler->tick();
     
     // Actualizar la vista del diagrama de Gantt
     ganttChartView.updateTimeline(scheduler->getTimeline(), scheduler->getCurrentTime());
     
+    // Verificar si la simulaciu00f3n ha terminado
     simulationCompleted = scheduler->isSimulationFinished();
     
     if (simulationCompleted) {
@@ -76,6 +78,8 @@ void SchedulingView::render() {
     // Renderizar el diagrama de Gantt
     ganttChartView.render();
     
+    // En una implementaciu00f3n real, se renderizaru00eda mu00e1s informaciu00f3n
+    // como la cola de procesos, mu00e9tricas, etc.
 }
 
 bool SchedulingView::isSimulationCompleted() const {
@@ -83,7 +87,7 @@ bool SchedulingView::isSimulationCompleted() const {
 }
 
 void SchedulingView::createScheduler() {
-    
+    // Crear el scheduler apropiado segu00fan el algoritmo seleccionado
     switch (currentAlgorithm) {
         case SchedulerType::FIFO:
             scheduler = std::make_unique<FIFO>();

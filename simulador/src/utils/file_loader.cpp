@@ -3,6 +3,9 @@
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 std::vector<Process> FileLoader::loadProcesses(const std::string& filename) {
     std::vector<Process> processes;
@@ -254,4 +257,30 @@ std::string FileLoader::trim(const std::string& str) {
     }).base();
     
     return (start < end) ? std::string(start, end) : std::string();
+}
+
+FileLoader::ExampleData
+FileLoader::loadExample(const std::string& name)
+{
+    fs::path base(EXAMPLES_DIR);
+    fs::path pFile = base / "processes"  / (name + ".txt");
+    fs::path rFile = base / "resources"  / (name + ".txt");
+    fs::path aFile = base / "actions"    / (name + ".txt");
+
+    // Procesos   (obligatorio)
+    if (!fs::exists(pFile))
+        throw std::runtime_error("No existe archivo de procesos: " + pFile.string());
+
+    ExampleData data;
+    data.processes = loadProcesses(pFile.string());
+
+    // Recursos   (opcional)
+    if (fs::exists(rFile))
+        data.resources = loadResources(rFile.string());
+
+    // Acciones   (opcional)
+    if (fs::exists(aFile))
+        data.actions   = loadActions(aFile.string());
+
+    return data;
 }

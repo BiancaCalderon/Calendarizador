@@ -5,6 +5,8 @@
 #include "scheduling/srt.h"
 #include "scheduling/round_robin.h"
 #include "models/process.h"
+#include "utils/file_loader.h"
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -67,7 +69,8 @@ void printGanttChart(const std::map<int, std::string>& timeline, int totalTime) 
     std::cout << std::endl;
 }
 
-// probar todos los algoritmos con los mismos procesos
+// Prueba inicial, probar todos los algoritmos con los mismos procesos
+/*
 void testAllSchedulers() {
     std::vector<Process> testProcesses = createTestProcesses();
     
@@ -177,24 +180,33 @@ void testAllSchedulers() {
     printGanttChart(priorityPreemptive.getTimeline(), priorityPreemptive.getCurrentTime()-1);
     printResults(priorityPreemptive.getFinishedProcesses());
 }
+*/
 
-int main(int argc, char *argv[]) {
-    std::cout << "--Iniciando pruebas del Simulador de Sistemas Operativos--\n" << std::endl;
-    
-    // mostrar los procesos que se usara en las pruebas
-    std::vector<Process> testProcesses = createTestProcesses();
-    std::cout << "Procesos a simular:" << std::endl;
-    std::cout << "PID\tAT\tBT\tPrio" << std::endl;
-    for (const auto& p : testProcesses) {
-        std::cout << p.getPID() << "\t" 
-                  << p.getArrivalTime() << "\t" 
-                  << p.getBurstTime() << "\t" 
-                  << p.getPriority() << std::endl;
+int main(int argc, char *argv[])
+{
+    std::string exampleName = (argc > 1) ? argv[1] : "ejemplo_fifo";
+
+    FileLoader::ExampleData data;
+    try {
+        data = FileLoader::loadExample(exampleName);
+    } catch (const std::exception& e) {
+        std::cerr << "Error al cargar ejemplo: " << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
-    
-    // Ejecutar pruebas de todos los algoritmos de calendarizacion
-    testAllSchedulers();
-    
-    std::cout << "\n--Simulacion completada--" << std::endl;
+
+    /* Aquí puedes decidir, a partir de lo que venga en 'data',
+       si corres la simulación de calendarización (solo processes)
+       o la de sincronización (processes + resources + actions).   */
+
+    //  Ejemplo rápido: solo calendarización FIFO.
+    FIFO fifoScheduler;
+    fifoScheduler.initialize(data.processes);
+    while (!fifoScheduler.isSimulationFinished())
+        fifoScheduler.tick();
+
+    printGanttChart(fifoScheduler.getTimeline(),
+                    fifoScheduler.getCurrentTime() - 1);
+    printResults(fifoScheduler.getFinishedProcesses());
+
     return 0;
 }

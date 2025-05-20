@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+
 #include "../models/process.h"
 #include "../models/resource.h"
 #include "../models/action.h"
@@ -22,6 +23,14 @@ public:
 
     // metodo para validar el formato de archivo de acciones
     static bool validateActionFile(const std::string& filename);
+
+    struct ExampleData {
+        std::vector<Process>  processes;
+        std::vector<Resource> resources;
+        std::vector<Action>   actions;
+    };
+
+    static ExampleData loadExample(const std::string& exampleName);
 
 private:
     // Metodos auxiliar para las lineas

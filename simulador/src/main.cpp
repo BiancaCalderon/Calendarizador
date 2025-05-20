@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <limits>
 
 std::vector<Process> createTestProcesses() {
     std::vector<Process> processes;
@@ -182,37 +183,105 @@ void testAllSchedulers() {
 }
 */
 
-int main(int argc, char *argv[])
-{
-    // Nombre del ejemplo
-    std::string exampleName = (argc > 1) ? argv[1] : "ejemplo_fifo";
-
-    // Cargar archivos
-    FileLoader::ExampleData data;
-    try {
-        data = FileLoader::loadExample(exampleName);
-    } catch (const std::exception& e) {
-        std::cerr << "Error al cargar ejemplo: " << e.what() << std::endl;
-        return EXIT_FAILURE;
+static int askInt(const std::string& msg, int min, int max) {
+    int v;
+    while (true) {
+        std::cout << msg;  std::cin >> v;
+        if (std::cin && v >= min && v <= max) { std::cin.ignore(); return v; }
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Entrada no válida. Inténtelo de nuevo.\n";
     }
+}
 
-    // Si hay recursos o acciones realizamos sincronización
-    bool syncMode = (!data.resources.empty() || !data.actions.empty());
+static std::string askStr(const std::string& msg) {
+    std::string s;
+    std::cout << msg;
+    std::getline(std::cin >> std::ws, s);
+    return s;
+}
 
-    if (syncMode) {
-        // Simulación de sincronización
-        SyncSim sim;
-        sim.initialize(data.processes, data.resources, data.actions);
-        sim.run();   // imprime la línea de tiempo simple
-    } else {
-        // Simulación de calendarización (FIFO demo)
-        FIFO fifo;
-        fifo.initialize(data.processes);
-        while (!fifo.isSimulationFinished())
-            fifo.tick();
+int main() {
+    while (true) {
+        bool simulacionEjecutada = false;
 
-        printGanttChart(fifo.getTimeline(), fifo.getCurrentTime() - 1);
-        printResults(fifo.getFinishedProcesses());
+        std::cout << "\n=== Simulador SO ===\n";
+        std::cout << "1) Programación (Calendarización)\n"
+                     "2) Sincronización (Mutex/Semáforo)\n"
+                     "3) Salir del programa\n";
+        int mode = askInt("\nSeleccione el tipo de simulación: ", 1, 3);
+        if (mode == 3) break;
+
+        FileLoader::ExampleData data;
+        while (true) {
+            std::string example = askStr("\nEjemplo de nombre (sin .txt): ");
+            try {
+                data = FileLoader::loadExample(example);
+                break;
+            } catch (const std::exception& e) {
+                std::cerr << "Error: " << e.what() << '\n';
+            }
+        }
+
+        /* Programación */
+        if (mode == 1) {
+            while (true) {
+                std::cout << "\nAlgoritmos:\n"
+                             "1) FIFO   2) SJF   3) SRT   4) Round-Robin   5) Priority 6) Volver\n";
+                int alg = askInt("Elige algoritmo: ", 1, 6);
+                if (alg == 6) break;
+
+                int q = 6;
+                if (alg == 4) q = askInt("Quantum para RR: ", 1, 100);
+
+                std::unique_ptr<Scheduler> scheduler;
+                switch (alg) {
+                    case 1: scheduler = std::make_unique<FIFO>(); break;
+                    case 2: scheduler = std::make_unique<SJF>();  break;
+                    case 3: scheduler = std::make_unique<SRT>();  break;
+                    case 4: scheduler = std::make_unique<RoundRobin>(q); break;
+                    case 5: scheduler = std::make_unique<Priority>();    break;
+                }
+
+                scheduler->initialize(data.processes);
+                while (!scheduler->isSimulationFinished()) scheduler->tick();
+
+                printGanttChart(scheduler->getTimeline(), scheduler->getCurrentTime() - 1);
+                printResults(scheduler->getFinishedProcesses());
+                simulacionEjecutada = true;
+                break;
+            }
+        }
+        /* Sincronización */
+        else if (mode == 2) {
+            if (data.resources.empty() || data.actions.empty()) {
+                std::cerr << "El ejemplo debe incluir recursos y archivos de acciones.\n";
+                continue;   
+            }
+            while (true) {
+                std::cout << "\nMecanismo:\n1) Mutex   2) Semáforo 3) Volver\n";
+                int mech = askInt("Elige el mecanismo: ", 1, 3);
+                if (mech == 3) break;
+
+                /* SyncSim ya llama a Resource::acquire()/release()
+                   → funciona tanto para mutex (count=1) como para semáforo (count>1).            */
+                SyncSim sim;
+                sim.initialize(data.processes, data.resources, data.actions, mech == 1);
+                sim.run();          // imprime línea de tiempo ACCESSED/WAITING
+                simulacionEjecutada = true;
+                break;
+            }
+        }
+
+        if (simulacionEjecutada) {
+            std::cout << "\n¿Desea realizar otra simulación? (s/n): ";
+            char again;
+            std::cin >> again;
+            if (again != 's' && again != 'S') {
+                std::cout << "Saliendo del simulador...\n";
+                break;
+            }
+        }
     }
     return 0;
 }

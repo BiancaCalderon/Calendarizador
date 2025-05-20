@@ -5,12 +5,14 @@ project(Simulador)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Opciones de compilaciu00f3n
+add_compile_definitions(EXAMPLES_DIR="${CMAKE_SOURCE_DIR}/examples")
+
+# Opciones de compilacion
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra)
 endif()
 
-# Definir los directorios de cu00f3digo fuente
+# Definir los directorios de codigo fuente
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Buscar todos los archivos fuente

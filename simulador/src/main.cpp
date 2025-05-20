@@ -6,6 +6,7 @@
 #include "scheduling/round_robin.h"
 #include "models/process.h"
 #include "utils/file_loader.h"
+#include "synchronization/sync_sim.h" 
 
 #include <iostream>
 #include <vector>
@@ -69,8 +70,7 @@ void printGanttChart(const std::map<int, std::string>& timeline, int totalTime) 
     std::cout << std::endl;
 }
 
-// Prueba inicial, probar todos los algoritmos con los mismos procesos
-/*
+/* Prueba inicial, probar todos los algoritmos con los mismos procesos
 void testAllSchedulers() {
     std::vector<Process> testProcesses = createTestProcesses();
     
@@ -184,8 +184,10 @@ void testAllSchedulers() {
 
 int main(int argc, char *argv[])
 {
+    // Nombre del ejemplo
     std::string exampleName = (argc > 1) ? argv[1] : "ejemplo_fifo";
 
+    // Cargar archivos
     FileLoader::ExampleData data;
     try {
         data = FileLoader::loadExample(exampleName);
@@ -194,19 +196,23 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    /* Aquí puedes decidir, a partir de lo que venga en 'data',
-       si corres la simulación de calendarización (solo processes)
-       o la de sincronización (processes + resources + actions).   */
+    // Si hay recursos o acciones realizamos sincronización
+    bool syncMode = (!data.resources.empty() || !data.actions.empty());
 
-    //  Ejemplo rápido: solo calendarización FIFO.
-    FIFO fifoScheduler;
-    fifoScheduler.initialize(data.processes);
-    while (!fifoScheduler.isSimulationFinished())
-        fifoScheduler.tick();
+    if (syncMode) {
+        // Simulación de sincronización
+        SyncSim sim;
+        sim.initialize(data.processes, data.resources, data.actions);
+        sim.run();   // imprime la línea de tiempo simple
+    } else {
+        // Simulación de calendarización (FIFO demo)
+        FIFO fifo;
+        fifo.initialize(data.processes);
+        while (!fifo.isSimulationFinished())
+            fifo.tick();
 
-    printGanttChart(fifoScheduler.getTimeline(),
-                    fifoScheduler.getCurrentTime() - 1);
-    printResults(fifoScheduler.getFinishedProcesses());
-
+        printGanttChart(fifo.getTimeline(), fifo.getCurrentTime() - 1);
+        printResults(fifo.getFinishedProcesses());
+    }
     return 0;
 }

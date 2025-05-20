@@ -57,3 +57,9 @@ void Resource::reset() {
     availableCount = initialCount;
     accessQueue.clear();
 }
+
+void Resource::release() {
+    if (availableCount < initialCount) {
+        availableCount++;
+    }
+}

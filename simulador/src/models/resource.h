@@ -24,6 +24,7 @@ public:
     // Mu00e9todos para manejo de acceso
     bool acquire(const std::string& processId);
     void release(const std::string& processId);
+    void release();
     
     // Agregar proceso a la cola de espera
     void addToQueue(const std::string& processId);

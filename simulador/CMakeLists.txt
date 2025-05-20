@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 project(Simulador)
 
-# Configurar el estu00e1ndar de C++
+# Configurar el estandar de C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Ruta absoluta a examples/
 add_compile_definitions(EXAMPLES_DIR="${CMAKE_SOURCE_DIR}/examples")
 
 # Opciones de compilacion

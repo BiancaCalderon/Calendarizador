@@ -4,17 +4,26 @@
 
 void SyncSim::initialize(const std::vector<Process>& p,
                          const std::vector<Resource>& r,
-                         const std::vector<Action>&  a)
+                         const std::vector<Action>&  a,
+                         bool useMutex)
 {
     processes_  = p;
     resources_  = r;
     actions_    = a;
+    useMutex_   = useMutex;
 
     // Ordena las acciones por ciclo para procesarlas secuencialmente
     std::sort(actions_.begin(), actions_.end(),
           [](const Action& x, const Action& y){
               return x.getCycle() < y.getCycle();
           });
+
+    // Si es mutex, forzar todos los recursos a tener count = 1
+    if (useMutex_) {
+        for (auto& res : resources_) {
+            res = Resource(res.getName(), 1);
+        }
+    }
 }
 
 Resource* SyncSim::findResource(const std::string& name)

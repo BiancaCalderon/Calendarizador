@@ -1,0 +1,11 @@
+# Formato: <PID>, <ACCION>, <RECURSO>, <CICLO>
+# Ejemplo de acciones para sincronizacion
+P1, READ, R1, 0
+P2, READ, R1, 0 
+P3, WRITE, R1, 0
+
+P4, READ, R2, 1
+P5, WRITE, R2, 1
+
+P1, WRITE, R1, 2
+P2, WRITE, R1, 2

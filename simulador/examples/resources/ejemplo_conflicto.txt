@@ -1,0 +1,4 @@
+# Formato: <NOMBRE_RECURSO>, <CONTADOR>
+# Ejemplo de recursos para sincronizacion con conflicto
+R1, 2
+R2, 1

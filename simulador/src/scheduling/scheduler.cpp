@@ -66,7 +66,7 @@ double Scheduler::getAverageTurnaroundTime() const {
 void Scheduler::updateReadyQueue() {
     // Agregar procesos que llegan en el tiempo actual a la cola de listos
     for (const auto& process : processes) {
-        // Si el proceso ya ha llegado, no estu00e1 completo y no estu00e1 en la cola de listos
+        // Si el proceso ya ha llegado, no esta completo y no esta en la cola de listos
         if (process.getArrivalTime() <= currentTime &&
             !process.isCompleted() &&
             std::find_if(readyQueue.begin(), readyQueue.end(),
@@ -81,7 +81,7 @@ void Scheduler::updateReadyQueue() {
 
 void Scheduler::updateWaitingTimes() {
     // Incrementar el tiempo de espera para todos los procesos en la cola de listos
-    // excepto el proceso en ejecuciu00f3n
+    // excepto el proceso en ejecucion
     for (auto& process : readyQueue) {
         if (currentProcessIndex == -1 || 
             process.getPID() != readyQueue[currentProcessIndex].getPID()) {

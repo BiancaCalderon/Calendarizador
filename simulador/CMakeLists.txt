@@ -5,6 +5,11 @@ project(Simulador)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Habilitar automoc para procesar Q_OBJECT
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
 # Ruta absoluta a examples/
 add_compile_definitions(EXAMPLES_DIR="${CMAKE_SOURCE_DIR}/examples")
 
@@ -14,25 +19,37 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # Definir los directorios de codigo fuente
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+# set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Buscar todos los archivos fuente
-file(GLOB_RECURSE SOURCES
-    "${SRC_DIR}/*.cpp"
-)
+# file(GLOB_RECURSE SOURCES
+#    "${SRC_DIR}/*.cpp"
+# )
 
 # Agregar el directorio de encabezados
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Sólo los fuentes de GUI (excluimos main.cpp de consola)
+file(GLOB_RECURSE GUI_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/main_gui.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/metrics.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/scheduling/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/synchronization/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/models/*.cpp"
+)
+
 # Crear el ejecutable
-add_executable(simulador ${SOURCES})
+add_executable(simulador ${GUI_SOURCES})
 
 # Buscar e incluir bibliotecas externas
 # Por ejemplo, para Qt, SFML o ImGui, descomente las lu00edneas correspondientes:
 
 # Qt
-# find_package(Qt5 COMPONENTS Widgets REQUIRED)
-# target_link_libraries(simulador Qt5::Widgets)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+target_link_libraries(simulador Qt5::Widgets)
 
 # SFML
 # find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)

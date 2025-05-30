@@ -1,7 +1,8 @@
 #ifndef SCHEDULING_VIEW_H
 #define SCHEDULING_VIEW_H
 
-#include <string>
+#include <QString>
+#include <QMap>
 #include <vector>
 #include <memory>
 #include <map>
@@ -12,49 +13,37 @@
 #include "../scheduling/srt.h"
 #include "../scheduling/round_robin.h"
 #include "../scheduling/priority.h"
-#include "gantt_chart_view.h"
 
 class SchedulingView {
-private:
-    std::unique_ptr<Scheduler> scheduler;  // Scheduler actual
-    std::vector<Process> processes;        // Procesos cargados
-    SchedulerType currentAlgorithm;        // Algoritmo actual
-    int quantum;                           // Quantum para Round Robin
-    bool simulationCompleted;              // Bandera de simulaciu00f3n completada
-    GanttChartView ganttChartView;         // Vista del diagrama de Gantt
-    
 public:
-    // Constructor
     SchedulingView();
-    
-    // Cargar archivo de procesos
-    bool loadProcessFile(const std::string& filename);
-    
-    // Establecer el algoritmo de calendarizaciu00f3n
+
+    bool loadProcessFile(const std::string &filename);
     void setSchedulerAlgorithm(SchedulerType algorithm);
-    
-    // Establecer el quantum para Round Robin
     void setQuantum(int value);
-    
-    // Reiniciar la simulaciu00f3n
     void reset();
-    
-    // Avanzar un paso en la simulaciu00f3n
     void step();
-    
-    // Obtener las mu00e9tricas actuales
+
     double getAverageWaitingTime() const;
     double getAverageTurnaroundTime() const;
-    
-    // Renderizar la vista
-    void render();
-    
-    // Verificar si la simulaciu00f3n ha terminado
+
+    // ——— Métodos para la GUI
+    QMap<int, QString> getTimeline() const;
+    int getCurrentTime() const;
     bool isSimulationCompleted() const;
-    
+
 private:
-    // Crear el scheduler apropiado segu00fan el algoritmo seleccionado
     void createScheduler();
+
+    std::unique_ptr<Scheduler> scheduler;  
+    std::vector<Process> processes;        
+    SchedulerType currentAlgorithm;        
+    int quantum;                           
+    bool simulationCompleted;              
+
+    // ——— Estado interno para la GUI
+    std::map<int, std::string> lastTimeline;
+    int lastTime = 0;
 };
 
-#endif // SCHEDULING_VIEW_H
+#endif

@@ -1,63 +1,65 @@
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef MAIN_WINDOW_GUI_H
+#define MAIN_WINDOW_GUI_H
 
-#include <string>
-#include <memory>
 #include "scheduling_view.h"
 #include "sync_view.h"
 
-// Enum para los modos de simulacion
-enum class SimulationMode {
-    SCHEDULING,    // simulacion de calenndarizacion
-    SYNCHRONIZATION // simulacion de sync
-};
+#include <QMainWindow>
+#include <QComboBox>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QLabel>
+#include <QGraphicsView>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
-class MainWindow {
-private:
-    SimulationMode currentMode;         // Modo actual de simulacion
-    std::unique_ptr<SchedulingView> schedulingView; // Vista para calendarizacion
-    std::unique_ptr<SyncView> syncView;           // Vista para sync
-    bool isRunning;                     // Bandera para indicar si la simulacion esta en ejecucion
-    int simulationSpeed;                // Velocidad de la simulacion (ms por ciclo)
+#include "../scheduling/scheduler.h"
+#include "../scheduling/fifo.h"
+#include "../scheduling/sjf.h"
+#include "../scheduling/srt.h"
+#include "../scheduling/round_robin.h"
+#include "../scheduling/priority.h"
+#include "gantt_chart_widget.h"
+#include "file_loader_widget.h"
+#include "algorithm_config_widget.h"
+#include "control_panel_widget.h"
+#include "metrics_panel_widget.h"
+
+class MainWindow : public QMainWindow {
+    Q_OBJECT
 
 public:
- 
-    MainWindow();
-    void initialize();
-    void run();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override = default;
 
-    // Cambiar el modo de simulacion
-    void setSimulationMode(SimulationMode mode);
-
-    // Cargar archivos para la simulacion actual
-    bool loadFiles(const std::string& processFile, 
-                  const std::string& resourceFile = "", 
-                  const std::string& actionFile = "");
-
-    // Iniciar la simulaciu00f3n
-    void startSimulation();
-
-    // Pausar la simulaciu00f3n
-    void pauseSimulation();
-
-    // Reiniciar la simulaciu00f3n
-    void resetSimulation();
-
-    // Avanzar un paso en la simulaciu00f3n
-    void stepSimulation();
-
-    // Establecer la velocidad de la simulaciu00f3n
-    void setSimulationSpeed(int speedMs);
+private slots:
+    void onModeChanged(int index);
+    void onFilesLoaded(const QString &proc,
+                       const QString &res,
+                       const QString &act);
+    void onAlgorithmChanged(int idx);
+    void onQuantumChanged(int q);
+    void onStartClicked();
+    void onPauseClicked();
+    void onStepClicked();
+    void onResetClicked();
 
 private:
-    // Inicializar la interfaz grafica
-    void initializeGUI();
+    void setupUi();
+    void connectSignals();
 
-    // Manejar eventos de la interfaz
-    void handleEvents();
+    // Widgets
+    QWidget              *centralWidget;
+    QVBoxLayout          *mainLayout;
+    QComboBox            *modeCombo;       // Calendarización / Sincronización
+    FileLoaderWidget     *loaderWidget;
+    AlgorithmConfigWidget *algoConfig;     // Combo+spin
+    ControlPanelWidget   *controlPanel;    // Start, Pause, Step, Reset, Speed
+    MetricsPanelWidget   *metricsPanel;    // Labels para métricas
+    GanttChartWidget     *ganttWidget;     // Zona de dibujo
 
-    // Renderizar la ventana
-    void render();
+    // Backend views
+    SchedulingView        schedulingView;
+    SyncView              syncView;
 };
-
-#endif
+#endif // MAIN_WINDOW_GUI_H

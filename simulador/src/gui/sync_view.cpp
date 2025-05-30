@@ -4,28 +4,26 @@
 
 SyncView::SyncView()
     : currentMechanism(SyncMechanismType::MUTEX),
-      simulationCompleted(false) {
+      simulationCompleted(false),
+      lastTime(0) {
     createSyncMechanism();
 }
 
-bool SyncView::loadFiles(const std::string& processFile, 
-                         const std::string& resourceFile, 
+bool SyncView::loadFiles(const std::string& processFile,
+                         const std::string& resourceFile,
                          const std::string& actionFile) {
     try {
         processes = FileLoader::loadProcesses(processFile);
         resources = FileLoader::loadResources(resourceFile);
-        actions = FileLoader::loadActions(actionFile);
-        
+        actions   = FileLoader::loadActions(actionFile);
         reset();
-        
-        std::cout << "Archivos cargados con u00e9xito." << std::endl;
-        std::cout << "Procesos: " << processes.size() << std::endl;
-        std::cout << "Recursos: " << resources.size() << std::endl;
-        std::cout << "Acciones: " << actions.size() << std::endl;
-        
+        std::cout << "Archivos cargados con éxito.\n"
+                  << "Procesos: " << processes.size()
+                  << ", Recursos: " << resources.size()
+                  << ", Acciones: " << actions.size() << std::endl;
         return true;
     } catch (const std::exception& e) {
-        std::cerr << "Error al cargar los archivos: " << e.what() << std::endl;
+        std::cerr << "Error al cargar archivos: " << e.what() << std::endl;
         return false;
     }
 }
@@ -39,53 +37,55 @@ void SyncView::setSyncMechanism(SyncMechanismType mechanism) {
 void SyncView::reset() {
     if (syncMechanism) {
         syncMechanism->initialize(processes, resources, actions);
-        ganttChartView.reset();
+        lastTimeline.clear();
+        lastTime = 0;
         simulationCompleted = false;
     }
 }
 
 void SyncView::step() {
-    if (!syncMechanism || processes.empty() || resources.empty() || actions.empty() || simulationCompleted) {
+    if (!syncMechanism || processes.empty() || resources.empty() ||
+        actions.empty() || simulationCompleted)
         return;
-    }
-    
-    // Avanzar un paso
-    syncMechanism->tick();
-    
-    // Actualizar la vista del diagrama de Gantt
-    ganttChartView.updateTimeline(syncMechanism->getTimeline(), syncMechanism->getCurrentTime());
-    
-    // Verificar si la simulación ha terminado
-    simulationCompleted = syncMechanism->isSimulationFinished();
-    
-    if (simulationCompleted) {
-        std::cout << "Simulaciu00f3n de sincronizaciu00f3n completada." << std::endl;
-    }
-}
 
-void SyncView::render() {
-    // Renderizar el diagrama de Gantt
-    ganttChartView.render();
-    
+    // Ejecuta un tick del mecanismo
+    syncMechanism->tick();
+
+    // Guarda estado para GUI
+    lastTimeline = syncMechanism->getTimeline();
+    lastTime     = syncMechanism->getCurrentTime();
+
+    // Actualiza bandera de fin
+    simulationCompleted = syncMechanism->isSimulationFinished();
 }
 
 bool SyncView::isSimulationCompleted() const {
     return simulationCompleted;
 }
 
-void SyncView::createSyncMechanism() {
+// ——— Implementación de los getters para GUI ———
 
+QMap<int, QString> SyncView::getTimeline() const {
+    QMap<int, QString> map;
+    for (const auto &entry : lastTimeline) {
+        map.insert(entry.first, QString::fromStdString(entry.second));
+    }
+    return map;
+}
+
+int SyncView::getCurrentTime() const {
+    return lastTime;
+}
+
+void SyncView::createSyncMechanism() {
     switch (currentMechanism) {
         case SyncMechanismType::MUTEX:
             syncMechanism = std::make_unique<Mutex>();
             break;
-            
         case SyncMechanismType::SEMAPHORE:
             syncMechanism = std::make_unique<Semaphore>();
             break;
     }
-    
-    // Inicializar el mecanismo con los datos actuales
     if (syncMechanism && !processes.empty() && !resources.empty() && !actions.empty()) {
         syncMechanism->initialize(processes, resources, actions);
     }

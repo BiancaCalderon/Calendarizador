@@ -67,7 +67,11 @@ void Priority::tick() {
     }
     
     // Actualizar tiempos de espera
-    updateWaitingTimes();
+    for (auto& process : readyQueue) {
+        if (currentProcessIndex != -1 && !readyQueue.empty() && currentProcessIndex < readyQueue.size() && process.getPID() != readyQueue[currentProcessIndex].getPID()) {
+            process.setWaitingTime(process.getWaitingTime() + 1);
+        }
+    }
     
     // Incrementar el tiempo actual
     currentTime++;

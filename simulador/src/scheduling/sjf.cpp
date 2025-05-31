@@ -49,7 +49,7 @@ void SJF::tick() {
     
     // Actualizar tiempos de espera para los procesos en la cola
     for (auto& process : readyQueue) {
-        if (process.getPID() != readyQueue[currentProcessIndex].getPID()) {
+        if (currentProcessIndex != -1 && !readyQueue.empty() && currentProcessIndex < readyQueue.size() && process.getPID() != readyQueue[currentProcessIndex].getPID()) {
             process.setWaitingTime(process.getWaitingTime() + 1);
         }
     }

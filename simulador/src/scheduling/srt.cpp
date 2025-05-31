@@ -16,13 +16,13 @@ void SRT::tick() {
     
     // Si encontramos un proceso para ejecutar
     if (newProcessIndex != -1) {
-        // Si hay un cambio de proceso o no habu00eda ninguno en ejecuciu00f3n
+        // Si hay un cambio de proceso o no había ninguno en ejecución
         if (currentProcessIndex != newProcessIndex) {
             currentProcessIndex = newProcessIndex;
         }
     }
     
-    // Si hay un proceso en ejecuciu00f3n
+    // Si hay un proceso en ejecución
     if (currentProcessIndex != -1) {
         // Obtener el proceso actual
         Process& currentProcess = readyQueue[currentProcessIndex];
@@ -44,7 +44,7 @@ void SRT::tick() {
             // Eliminar de la cola de listos
             readyQueue.erase(readyQueue.begin() + currentProcessIndex);
             
-            // No hay proceso en ejecuciu00f3n
+            // No hay proceso en ejecución
             currentProcessIndex = -1;
         }
     }

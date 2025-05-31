@@ -24,9 +24,9 @@ const std::map<int, std::string>& SyncMechanism::getTimeline() const {
 }
 
 bool SyncMechanism::isSimulationFinished() const {
-    // La simulacion termina cuando todas las acciones iniciales han sido completadas.
+    // La simulación termina cuando todas las acciones iniciales han sido completadas.
     // Esto significa que cada accion en la lista original 'actions' debe estar en 'completedActions'.
-    if (actions.empty()) return true; // Si no hay acciones, la simulacion 'termina' inmediatamente
+    if (actions.empty()) return true; // Si no hay acciones, la simulación 'termina' inmediatamente
 
     if (completedActions.size() != actions.size()) return false; // Optimizacion rapida
 
@@ -42,7 +42,7 @@ bool SyncMechanism::isSimulationFinished() const {
                 break;
             }
         }
-        if (!found) return false; // Si una accion original no esta en completadas, la simulacion no ha terminado.
+        if (!found) return false; // Si una accion original no esta en completadas, la simulación no ha terminado.
     }
 
     return true; // Todas las acciones originales encontradas en completadas.
@@ -110,7 +110,7 @@ Resource* SyncMechanism::getResourceByName(const std::string& name) {
 }
 
 void SyncMechanism::updateTimeline(const std::string& processId, ActionStatus status) {
-    // Crear una representaciu00f3n visual del evento
+    // Crear una representación visual del evento
     std::string eventLabel = processId + "|" + Action::actionStatusToString(status);
     timeline[currentTime] = eventLabel;
 }

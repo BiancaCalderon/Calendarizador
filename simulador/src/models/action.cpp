@@ -36,7 +36,7 @@ ActionType Action::stringToActionType(const std::string& typeStr) {
     } else if (typeStr == "WRITE") {
         return ActionType::WRITE;
     } else {
-        throw std::invalid_argument("Tipo de acciu00f3n no vu00e1lido: " + typeStr);
+        throw std::invalid_argument("Tipo de acción no válido: " + typeStr);
     }
 }
 

@@ -9,20 +9,20 @@ enum class ActionType {
     WRITE
 };
 
-// Enum para representar el estado de la acciu00f3n
+// Enum para representar el estado de la acción
 enum class ActionStatus {
     WAITING,    // Esperando acceso al recurso
     ACCESSED,   // Con acceso al recurso
-    COMPLETED   // Acciu00f3n completada
+    COMPLETED   // Acción completada
 };
 
 class Action {
 private:
-    std::string processId;      // ID del proceso que ejecuta la acciu00f3n
-    ActionType type;            // Tipo de acciu00f3n (READ o WRITE)
+    std::string processId;      // ID del proceso que ejecuta la acción
+    ActionType type;            // Tipo de acción (READ o WRITE)
     std::string resourceName;   // Nombre del recurso a acceder
-    int cycle;                  // Ciclo en el que se inicia la acciu00f3n
-    ActionStatus status;        // Estado actual de la acciu00f3n
+    int cycle;                  // Ciclo en el que se inicia la acción
+    ActionStatus status;        // Estado actual de la acción
 
 public:
     // Constructor
@@ -39,13 +39,13 @@ public:
     // Setter para el estado
     void setStatus(ActionStatus newStatus);
     
-    // Conversiu00f3n de string a ActionType
+    // Conversión de string a ActionType
     static ActionType stringToActionType(const std::string& typeStr);
     
-    // Obtener representaciu00f3n string del tipo de acciu00f3n
+    // Obtener representación string del tipo de acción
     static std::string actionTypeToString(ActionType type);
     
-    // Obtener representaciu00f3n string del estado de la acciu00f3n
+    // Obtener representación string del estado de la acción
     static std::string actionStatusToString(ActionStatus status);
 };
 

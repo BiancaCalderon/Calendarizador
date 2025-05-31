@@ -14,9 +14,9 @@ protected:
     std::vector<Process> processes;      // Lista de procesos
     std::vector<Resource> resources;     // Lista de recursos
     std::vector<Action> actions;         // Lista de acciones a realizar
-    std::vector<Action> pendingActions;  // Acciones pendientes de ejecuciu00f3n
+    std::vector<Action> pendingActions;  // Acciones pendientes de ejecución
     std::vector<Action> completedActions; // Acciones completadas
-    int currentTime;                     // Tiempo actual de la simulacion
+    int currentTime;                     // Tiempo actual de la simulación
     std::map<int, std::string> timeline; // Historial de eventos para el gantt
 public:
     // Constructor
@@ -30,7 +30,7 @@ public:
                            const std::vector<Resource>& resources,
                            const std::vector<Action>& actions);
     
-    // Avanzar un ciclo en la simulacion
+    // Avanzar un ciclo en la simulación
     virtual void tick() = 0;
     
   
@@ -38,7 +38,7 @@ public:
     
     const std::map<int, std::string>& getTimeline() const;
     
-    // Verificar si la simulacion ha terminado
+    // Verificar si la simulación ha terminado
     bool isSimulationFinished() const;
     
     virtual void reset();

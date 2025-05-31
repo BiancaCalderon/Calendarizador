@@ -9,12 +9,12 @@ void FIFO::tick() {
     // Actualizar la cola de procesos listos
     updateReadyQueue();
     
-    // Si no hay un proceso en ejecuciu00f3n, seleccionar uno nuevo
+    // Si no hay un proceso en ejecución, seleccionar uno nuevo
     if (currentProcessIndex == -1 && !readyQueue.empty()) {
         currentProcessIndex = selectNextProcess();
     }
     
-    // Si hay un proceso en ejecuciu00f3n
+    // Si hay un proceso en ejecución
     if (currentProcessIndex != -1) {
         // Obtener el proceso actual
         Process& currentProcess = readyQueue[currentProcessIndex];
@@ -36,7 +36,7 @@ void FIFO::tick() {
             // Eliminar de la cola de listos
             readyQueue.erase(readyQueue.begin() + currentProcessIndex);
             
-            // No hay proceso en ejecuciu00f3n
+            // No hay proceso en ejecución
             currentProcessIndex = -1;
         }
     }
@@ -55,6 +55,6 @@ void FIFO::tick() {
 int FIFO::selectNextProcess() {
     // En FIFO, simplemente se selecciona el primer proceso de la cola
     // Ya que la cola se actualiza en orden de llegada, el primero
-    // es el que llegu00f3 primero (First In First Out)
-    return 0; // Devuelve el u00edndice del primer proceso en la cola de listos
+    // es el que llegó primero (First In First Out)
+    return 0; // Devuelve el índice del primer proceso en la cola de listos
 }

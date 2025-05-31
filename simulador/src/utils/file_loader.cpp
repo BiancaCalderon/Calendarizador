@@ -21,7 +21,7 @@ std::vector<Process> FileLoader::loadProcesses(const std::string& filename) {
             try {
                 processes.push_back(parseProcessLine(line));
             } catch (const std::exception& e) {
-                throw std::runtime_error("Error al procesar lu00ednea: " + line + ". " + e.what());
+                throw std::runtime_error("Error al procesar línea: " + line + ". " + e.what());
             }
         }
     }
@@ -44,7 +44,7 @@ std::vector<Resource> FileLoader::loadResources(const std::string& filename) {
             try {
                 resources.push_back(parseResourceLine(line));
             } catch (const std::exception& e) {
-                throw std::runtime_error("Error al procesar lu00ednea: " + line + ". " + e.what());
+                throw std::runtime_error("Error al procesar línea: " + line + ". " + e.what());
             }
         }
     }
@@ -67,7 +67,7 @@ std::vector<Action> FileLoader::loadActions(const std::string& filename) {
             try {
                 actions.push_back(parseActionLine(line));
             } catch (const std::exception& e) {
-                throw std::runtime_error("Error al procesar lu00ednea: " + line + ". " + e.what());
+                throw std::runtime_error("Error al procesar línea: " + line + ". " + e.what());
             }
         }
     }
@@ -153,7 +153,7 @@ Process FileLoader::parseProcessLine(const std::string& line) {
     }
     
     if (tokens.size() != 4) {
-        throw std::invalid_argument("Formato invu00e1lido. El formato debe ser: <PID>, <BurstTime>, <ArrivalTime>, <Priority>");
+        throw std::invalid_argument("Formato inválido. El formato debe ser: <PID>, <BurstTime>, <ArrivalTime>, <Priority>");
     }
     
     std::string pid = tokens[0];
@@ -164,11 +164,11 @@ Process FileLoader::parseProcessLine(const std::string& line) {
         arrivalTime = std::stoi(tokens[2]);
         priority = std::stoi(tokens[3]);
     } catch (const std::exception&) {
-        throw std::invalid_argument("Error de conversiu00f3n de tipos. BurstTime, ArrivalTime y Priority deben ser nu00fameros enteros.");
+        throw std::invalid_argument("Error de conversión de tipos. BurstTime, ArrivalTime y Priority deben ser números enteros.");
     }
     
     if (burstTime <= 0) {
-        throw std::invalid_argument("BurstTime debe ser un nu00famero positivo.");
+        throw std::invalid_argument("BurstTime debe ser un número positivo.");
     }
     
     if (arrivalTime < 0) {
@@ -189,7 +189,7 @@ Resource FileLoader::parseResourceLine(const std::string& line) {
     }
     
     if (tokens.size() != 2) {
-        throw std::invalid_argument("Formato invu00e1lido. El formato debe ser: <NombreRecurso>, <Contador>");
+        throw std::invalid_argument("Formato inválido. El formato debe ser: <NombreRecurso>, <Contador>");
     }
     
     std::string name = tokens[0];
@@ -198,11 +198,11 @@ Resource FileLoader::parseResourceLine(const std::string& line) {
     try {
         count = std::stoi(tokens[1]);
     } catch (const std::exception&) {
-        throw std::invalid_argument("Error de conversiu00f3n de tipos. Contador debe ser un nu00famero entero.");
+        throw std::invalid_argument("Error de conversión de tipos. Contador debe ser un número entero.");
     }
     
     if (count <= 0) {
-        throw std::invalid_argument("Contador debe ser un nu00famero positivo.");
+        throw std::invalid_argument("Contador debe ser un número positivo.");
     }
     
     return Resource(name, count);
@@ -219,7 +219,7 @@ Action FileLoader::parseActionLine(const std::string& line) {
     }
     
     if (tokens.size() != 4) {
-        throw std::invalid_argument("Formato invu00e1lido. El formato debe ser: <PID>, <Acciu00f3n>, <Recurso>, <Ciclo>");
+        throw std::invalid_argument("Formato inválido. El formato debe ser: <PID>, <Acción>, <Recurso>, <Ciclo>");
     }
     
     std::string pid = tokens[0];
@@ -230,7 +230,7 @@ Action FileLoader::parseActionLine(const std::string& line) {
     try {
         cycle = std::stoi(tokens[3]);
     } catch (const std::exception&) {
-        throw std::invalid_argument("Error de conversiu00f3n de tipos. Ciclo debe ser un nu00famero entero.");
+        throw std::invalid_argument("Error de conversión de tipos. Ciclo debe ser un número entero.");
     }
     
     if (cycle < 0) {

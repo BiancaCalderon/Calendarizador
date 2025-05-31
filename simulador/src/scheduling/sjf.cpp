@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <climits>
 
-SJF::SJF() {
-    // SJF no es preemptivo (a diferencia de SRT)
+SJF::SJF() : Scheduler() {
+    // SJF no es preemptivo
     isPreemptive = false;
 }
 
@@ -11,12 +11,12 @@ void SJF::tick() {
     // Actualizar la cola de procesos listos
     updateReadyQueue();
     
-    // Si no hay un proceso en ejecuciu00f3n, seleccionar uno nuevo
+    // Si no hay un proceso en ejecución, seleccionar uno nuevo
     if (currentProcessIndex == -1 && !readyQueue.empty()) {
         currentProcessIndex = selectNextProcess();
     }
     
-    // Si hay un proceso en ejecuciu00f3n
+    // Si hay un proceso en ejecución
     if (currentProcessIndex != -1) {
         // Obtener el proceso actual
         Process& currentProcess = readyQueue[currentProcessIndex];
@@ -30,7 +30,11 @@ void SJF::tick() {
         // Si el proceso ha terminado
         if (currentProcess.isCompleted()) {
             // Calcular tiempo de retorno (turnaround time)
-            currentProcess.setTurnaroundTime(currentTime + 1 - currentProcess.getArrivalTime());
+            currentProcess.setTurnaroundTime(currentTime + 1);
+            
+            // Calcular tiempo de espera (waiting time)
+            // WT = TAT - BurstTime
+            currentProcess.setWaitingTime(currentProcess.getTurnaroundTime() - currentProcess.getBurstTime());
             
             // Mover a la lista de procesos terminados
             finishedProcesses.push_back(currentProcess);
@@ -38,13 +42,17 @@ void SJF::tick() {
             // Eliminar de la cola de listos
             readyQueue.erase(readyQueue.begin() + currentProcessIndex);
             
-            // No hay proceso en ejecuciu00f3n
+            // No hay proceso en ejecución
             currentProcessIndex = -1;
         }
     }
     
-    // Actualizar tiempos de espera
-    updateWaitingTimes();
+    // Actualizar tiempos de espera para los procesos en la cola
+    for (auto& process : readyQueue) {
+        if (process.getPID() != readyQueue[currentProcessIndex].getPID()) {
+            process.setWaitingTime(process.getWaitingTime() + 1);
+        }
+    }
     
     // Incrementar el tiempo actual
     currentTime++;
@@ -56,7 +64,7 @@ int SJF::selectNextProcess() {
         return -1;
     }
     
-    // Buscar el proceso con menor burst time (no el tiempo restante)
+    // Buscar el proceso con menor burst time
     int shortestIndex = 0;
     int shortestTime = INT_MAX;
     

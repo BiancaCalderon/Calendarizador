@@ -16,58 +16,72 @@ void Mutex::tick() {
 }
 
 void Mutex::processActions() {
-    // Iterar sobre las acciones pendientes
+    std::vector<Action> justCompletedActions;
     auto it = pendingActions.begin();
     while (it != pendingActions.end()) {
         Action& action = *it;
         Resource* resource = getResourceByName(action.getResourceName());
-        
-        if (resource) {
-            // Verificar si el recurso esta disponible
-            bool acquired = false;
-            
-            // Si la accion ya tiene acceso al recurso
-            if (action.getStatus() == ActionStatus::ACCESSED) {
-                // Liberar el recurso y marcar como completada
-                resource->release(action.getProcessId());
-                action.setStatus(ActionStatus::COMPLETED);
-                
-                // Actualizar timeline
-                updateTimeline(action.getProcessId(), ActionStatus::COMPLETED);
-                
-                // Mover a la lista de acciones completadas
-                completedActions.push_back(action);
-                it = pendingActions.erase(it);
-                continue;
-            }
-            
-            // Mutex: solo un proceso puede acceder al mismo tiempo
-            if (resource->getAvailableCount() > 0) {
-                // Adquirir el recurso
-                acquired = resource->acquire(action.getProcessId());
-                
-                if (acquired) {
-                    // Actualizar el estado de la accion
-                    action.setStatus(ActionStatus::ACCESSED);
-                    
-                    // Actualizar timeline
-                    updateTimeline(action.getProcessId(), ActionStatus::ACCESSED);
-                } else {
-                    // Agregar a la cola de espera del recurso
-                    resource->addToQueue(action.getProcessId());
-                    
-                    // Actualizar timeline
-                    updateTimeline(action.getProcessId(), ActionStatus::WAITING);
-                }
+
+        std::cerr << "Debug [Mutex]: Processing action " << action.getProcessId()
+                  << " type " << Action::actionTypeToString(action.getType())
+                  << " res " << action.getResourceName()
+                  << " cycle " << action.getCycle()
+                  << " current status " << Action::actionStatusToString(action.getStatus())
+                  << " at time " << currentTime << std::endl;
+
+        if (!resource) { // Recurso no valido
+            std::cerr << "Debug [Mutex]: Invalid resource for action " << action.getProcessId() << std::endl;
+            ++it;
+            continue;
+        }
+
+        // Estado 1: ACCESSED (Accion usando el recurso en el ciclo anterior, completando ahora)
+        if (action.getStatus() == ActionStatus::ACCESSED) {
+            std::cerr << "Debug [Mutex]: Completing action " << action.getProcessId() << std::endl;
+            resource->release(action.getProcessId()); // Liberar recurso
+            action.setStatus(ActionStatus::COMPLETED); // Marcar como completada
+            updateTimeline(action.getProcessId(), ActionStatus::COMPLETED); // Registrar en timeline
+            justCompletedActions.push_back(action); // Añadir a lista de completadas de este ciclo
+            it = pendingActions.erase(it); // Eliminar de pendientes
+            continue; // Continuar al siguiente elemento
+        }
+
+        // Estado 2: WAITING (Accion esperando acceso)
+        if (action.getStatus() == ActionStatus::WAITING) {
+             std::cerr << "Debug [Mutex]: Attempting to acquire resource for action " << action.getProcessId() << std::endl;
+            bool acquired = resource->acquire(action.getProcessId()); // Intentar adquirir (maneja cola)
+
+            if (acquired) {
+                std::cerr << "Debug [Mutex]: Acquired resource for action " << action.getProcessId() << std::endl;
+                action.setStatus(ActionStatus::ACCESSED); // Adquirio, pasa a ACCESSED
+                updateTimeline(action.getProcessId(), ActionStatus::ACCESSED); // Registrar en timeline
+                ++it; // Permanece en pendingActions para completar en el prox tick
             } else {
-                // Recurso no disponible, agregar a la cola de espera
-                resource->addToQueue(action.getProcessId());
-                
-                // Actualizar timeline
-                updateTimeline(action.getProcessId(), ActionStatus::WAITING);
+                // Sigue esperando
+                 std::cerr << "Debug [Mutex]: Could not acquire resource for action " << action.getProcessId() << ". Still waiting." << std::endl;
+                updateTimeline(action.getProcessId(), ActionStatus::WAITING); // Registrar en timeline
+                ++it; // Permanece en pendingActions
             }
+            continue; // Continuar al siguiente elemento
         }
         
-        ++it;
+        // Si llega aqui, es una accion recien añadida por updatePendingActions (deberia ser WAITING)
+        // O un estado inesperado. La tratamos como WAITING.
+         std::cerr << "Debug [Mutex]: Unexpected action status for " << action.getProcessId() << ". Treating as WAITING." << std::endl;
+         bool acquired = resource->acquire(action.getProcessId());
+        if (acquired) {
+             std::cerr << "Debug [Mutex]: Acquired resource (fallback) for action " << action.getProcessId() << std::endl;
+             action.setStatus(ActionStatus::ACCESSED);
+             updateTimeline(action.getProcessId(), ActionStatus::ACCESSED);
+             ++it;
+        } else {
+             std::cerr << "Debug [Mutex]: Could not acquire resource (fallback) for action " << action.getProcessId() << ". Still waiting." << std::endl;
+             updateTimeline(action.getProcessId(), ActionStatus::WAITING);
+             ++it;
+        }
     }
+
+    // Mover acciones completadas de este ciclo a la lista general de completadas
+    completedActions.insert(completedActions.end(), justCompletedActions.begin(), justCompletedActions.end());
+     std::cerr << "Debug [Mutex]: ProcessActions finished. Total completed: " << completedActions.size() << ", Total actions: " << actions.size() << ", Pending actions: " << pendingActions.size() << std::endl;
 }

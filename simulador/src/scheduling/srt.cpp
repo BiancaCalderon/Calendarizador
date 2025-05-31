@@ -1,6 +1,7 @@
 #include "srt.h"
 #include <algorithm>
 #include <climits>
+#include <iostream>
 
 SRT::SRT() {
     // SRT es un algoritmo preemptivo
@@ -10,6 +11,12 @@ SRT::SRT() {
 void SRT::tick() {
     // Actualizar la cola de procesos listos
     updateReadyQueue();
+    
+    // Debug: Estado al inicio del tick
+    std::cerr << "[SRT Tick] Time: " << currentTime << ", Ready Queue Size: " << readyQueue.size() << ", Current Process Index: " << currentProcessIndex << std::endl;
+    if (currentProcessIndex != -1 && static_cast<size_t>(currentProcessIndex) < readyQueue.size()) {
+        std::cerr << "  Executing Process: " << readyQueue[currentProcessIndex].getPID() << ", Remaining: " << readyQueue[currentProcessIndex].getRemainingTime() << std::endl;
+    }
     
     // Siempre seleccionar el proceso con menor tiempo restante
     int newProcessIndex = selectNextProcess();
@@ -49,10 +56,14 @@ void SRT::tick() {
         }
     }
     
-    // Actualizar tiempos de espera
+    // Actualizar tiempos de espera para los procesos en la cola que NO están ejecutando en este ciclo
+    std::cerr << "  Updating Waiting Times..." << std::endl;
     for (auto& process : readyQueue) {
-        if (currentProcessIndex != -1 && !readyQueue.empty() && currentProcessIndex < readyQueue.size() && process.getPID() != readyQueue[currentProcessIndex].getPID()) {
-            process.setWaitingTime(process.getWaitingTime() + 1);
+        // Solo incrementar si no es el proceso actual (si currentProcessIndex es válido)
+        bool isExecuting = (currentProcessIndex != -1 && static_cast<size_t>(currentProcessIndex) < readyQueue.size() && process.getPID() == readyQueue[currentProcessIndex].getPID());
+        if (!isExecuting) {
+             process.setWaitingTime(process.getWaitingTime() + 1);
+             std::cerr << "    Incremented WT for " << process.getPID() << ", new WT: " << process.getWaitingTime() << std::endl;
         }
     }
     

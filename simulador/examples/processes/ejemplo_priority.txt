@@ -1,7 +1,7 @@
 # Formato: <PID>, <BurstTime>, <ArrivalTime>, <Priority>
-# Ejemplo para algoritmo Priority (menor nu00famero = mayor prioridad)
+# Ejemplo para algoritmo Priority (menor numero = mayor prioridad)
 P1, 5, 0, 3
-P2, 4, 1, 1
-P3, 7, 2, 2
-P4, 3, 3, 4
-P5, 6, 4, 2 
+P2, 4, 0, 1
+P3, 7, 0, 2
+P4, 3, 0, 4
+P5, 6, 0, 2 

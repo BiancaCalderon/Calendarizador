@@ -1,6 +1,7 @@
 #include "priority.h"
 #include <algorithm>
 #include <climits>
+#include <iostream>
 
 Priority::Priority(bool isPreemptive) : Scheduler() {
     // Establecer si el algoritmo es preemptivo o no
@@ -14,6 +15,12 @@ void Priority::setPreemptive(bool isPreemptive) {
 void Priority::tick() {
     // Actualizar la cola de procesos listos
     updateReadyQueue();
+    
+    // Debug: Estado al inicio del tick
+    std::cerr << "[Priority Tick] Time: " << currentTime << ", Ready Queue Size: " << readyQueue.size() << ", Current Process Index: " << currentProcessIndex << std::endl;
+    if (currentProcessIndex != -1 && static_cast<size_t>(currentProcessIndex) < readyQueue.size()) {
+        std::cerr << "  Executing Process: " << readyQueue[currentProcessIndex].getPID() << ", Remaining: " << readyQueue[currentProcessIndex].getRemainingTime() << std::endl;
+    }
     
     // Si no hay un proceso en ejecución o si es preemptivo, seleccionar uno nuevo
     if (currentProcessIndex == -1 || isPreemptive) {
@@ -66,10 +73,14 @@ void Priority::tick() {
         }
     }
     
-    // Actualizar tiempos de espera
+    // Actualizar tiempos de espera para los procesos en la cola que NO están ejecutando en este ciclo
+    std::cerr << "  Updating Waiting Times..." << std::endl;
     for (auto& process : readyQueue) {
-        if (currentProcessIndex != -1 && !readyQueue.empty() && currentProcessIndex < readyQueue.size() && process.getPID() != readyQueue[currentProcessIndex].getPID()) {
-            process.setWaitingTime(process.getWaitingTime() + 1);
+        // Solo incrementar si no es el proceso actual (si currentProcessIndex es válido)
+        bool isExecuting = (currentProcessIndex != -1 && static_cast<size_t>(currentProcessIndex) < readyQueue.size() && process.getPID() == readyQueue[currentProcessIndex].getPID());
+        if (!isExecuting) {
+             process.setWaitingTime(process.getWaitingTime() + 1);
+             std::cerr << "    Incremented WT for " << process.getPID() << ", new WT: " << process.getWaitingTime() << std::endl;
         }
     }
     

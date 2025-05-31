@@ -13,13 +13,14 @@ class ControlPanelWidget : public QWidget {
 public:
     explicit ControlPanelWidget(QWidget *parent = nullptr);
     void setRunning(bool running);
+    int getSpeed() const;
 
 signals:
     void startClicked();
     void pauseClicked();
     void stepClicked();
     void resetClicked();
-    void speedChanged(int ms);
+    void speedChanged(int speed);
 
 private slots:
     void onStart();
@@ -34,6 +35,7 @@ private:
     QPushButton *stepButton;
     QPushButton *resetButton;
     QSlider    *speedSlider;
+    QLabel     *speedLabel;
 };
 
 #endif

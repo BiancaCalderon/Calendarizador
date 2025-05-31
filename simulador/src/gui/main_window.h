@@ -12,6 +12,7 @@
 #include <QGraphicsView>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QTimer>
 
 #include "../scheduling/scheduler.h"
 #include "../scheduling/fifo.h"
@@ -43,10 +44,16 @@ private slots:
     void onPauseClicked();
     void onStepClicked();
     void onResetClicked();
+    void onTimerTimeout();
+    void onSpeedChanged(int speed);
 
 private:
     void setupUi();
     void connectSignals();
+    void executeSimulationStep();
+
+    int stepCounter = 0;
+    const int maxSteps = 10000;
 
     // Widgets
     QWidget              *centralWidget;
@@ -61,5 +68,7 @@ private:
     // Backend views
     SchedulingView        schedulingView;
     SyncView              syncView;
+
+    QTimer               *simulationTimer;
 };
 #endif // MAIN_WINDOW_GUI_H

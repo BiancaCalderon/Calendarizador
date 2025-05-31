@@ -1,8 +1,8 @@
-#include "control_panel_widget.h"
-#include <QPushButton>
-#include <QSlider>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
+#include <QSlider>
+#include "control_panel_widget.h"
 
 ControlPanelWidget::ControlPanelWidget(QWidget *parent)
     : QWidget(parent) {
@@ -11,9 +11,10 @@ ControlPanelWidget::ControlPanelWidget(QWidget *parent)
     stepButton  = new QPushButton("Step", this);
     resetButton = new QPushButton("Reset", this);
 
+    speedLabel = new QLabel("Speed:");
     speedSlider = new QSlider(Qt::Horizontal, this);
-    speedSlider->setRange(50, 2000);
-    speedSlider->setValue(500);
+    speedSlider->setRange(1, 10);
+    speedSlider->setValue(5);
 
     auto *layout = new QHBoxLayout(this);
     layout->addWidget(startButton);
@@ -21,7 +22,7 @@ ControlPanelWidget::ControlPanelWidget(QWidget *parent)
     layout->addWidget(stepButton);
     layout->addWidget(resetButton);
     layout->addSpacing(20);
-    layout->addWidget(new QLabel("Speed:", this));
+    layout->addWidget(speedLabel);
     layout->addWidget(speedSlider);
     setLayout(layout);
 
@@ -35,13 +36,30 @@ ControlPanelWidget::ControlPanelWidget(QWidget *parent)
 void ControlPanelWidget::setRunning(bool running) {
     startButton->setEnabled(!running);
     pauseButton->setEnabled(running);
+    stepButton->setEnabled(!running);
+    resetButton->setEnabled(true);
 }
 
-void ControlPanelWidget::onStart() { emit startClicked(); }
-void ControlPanelWidget::onPause() { emit pauseClicked(); }
-void ControlPanelWidget::onStep()  { emit stepClicked(); }
-void ControlPanelWidget::onReset() { emit resetClicked(); }
+int ControlPanelWidget::getSpeed() const {
+    return speedSlider->value();
+}
 
 void ControlPanelWidget::onSpeedSliderChanged(int value) {
     emit speedChanged(value);
+}
+
+void ControlPanelWidget::onStart() {
+    emit startClicked();
+}
+
+void ControlPanelWidget::onPause() {
+    emit pauseClicked();
+}
+
+void ControlPanelWidget::onStep() {
+    emit stepClicked();
+}
+
+void ControlPanelWidget::onReset() {
+    emit resetClicked();
 }

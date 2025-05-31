@@ -20,7 +20,7 @@ public:
 
     bool loadProcessFile(const std::string &filename);
     void setSchedulerAlgorithm(SchedulerType algorithm);
-    void setQuantum(int value);
+    void setQuantum(int q);
     void reset();
     void step();
 

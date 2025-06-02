@@ -50,9 +50,13 @@ std::string Action::actionTypeToString(ActionType type) {
 
 std::string Action::actionStatusToString(ActionStatus status) {
     switch (status) {
-        case ActionStatus::WAITING: return "WAITING";
-        case ActionStatus::ACCESSED: return "ACCESSED";
-        case ActionStatus::COMPLETED: return "COMPLETED";
-        default: return "UNKNOWN";
+        case ActionStatus::WAITING:
+            return "WAITING";
+        case ActionStatus::ACCESSED:
+            return "ACCESSED";
+        case ActionStatus::COMPLETED:
+            return "COMPLETED";
+        default:
+            return "UNKNOWN";
     }
 }

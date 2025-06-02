@@ -110,7 +110,7 @@ Resource* SyncMechanism::getResourceByName(const std::string& name) {
 }
 
 void SyncMechanism::updateTimeline(const std::string& processId, ActionStatus status) {
-    // Crear una representación visual del evento
+    // Crear una representación visual del evento con el estado
     std::string eventLabel = processId + "|" + Action::actionStatusToString(status);
     timeline[currentTime] = eventLabel;
 }

@@ -73,38 +73,47 @@ void GanttChartWidget::drawTimeline(const QMap<int, QString> &timeline, int curr
     for (auto it = timeline.constBegin(); it != timeline.constEnd(); ++it) {
         int cycle = it.key();
         const QString &proc = it.value();
-        // No necesitamos filtrar por minCycle/maxCycle aqui, el QGraphicsView lo hace.
-        // if (cycle < minCycle || cycle > maxCycle || proc == "-") continue; // Eliminar esta linea
-
-        QColor color = getColorForProcess(proc);
-        int x = cycle * cycleWidth; // Posicionar basado en el ciclo absoluto
+        
+        // Separar el ID del proceso y el estado
+        QStringList parts = proc.split("|");
+        QString processId = parts[0];
+        QString status = parts.size() > 1 ? parts[1] : "";
+        
+        QColor color;
+        if (status == "ACCESSED") {
+            color = QColor(0, 255, 0); // Verde para ACCESSED
+        } else if (status == "WAITING") {
+            color = QColor(255, 0, 0); // Rojo para WAITING
+        } else {
+            color = getColorForProcess(processId); // Color normal para otros casos
+        }
+        
+        int x = cycle * cycleWidth;
 
         // Dibujar barra (rectangulo)
         auto *rect = scene->addRect(x, y, cycleWidth, cycleHeight,
                                     QPen(Qt::black), QBrush(color));
 
         // Dibujar etiqueta (texto)
-        auto *label = scene->addSimpleText(proc);
+        auto *label = scene->addSimpleText(processId);
         label->setPos(x + 2, y + 2);
     }
     
-    // Dibujar etiquetas de ciclo solo para el rango visible o relevante?
-    // Podríamos dibujar todas, o solo un rango para no saturar.
-    // Por ahora, dibujar las etiquetas de ciclo dentro del rango de la escena.
-     if (!timeline.isEmpty()) {
-         int firstCycle = timeline.constBegin().key();
-         int lastCycle = (timeline.constEnd() - 1).key();
-         for (int cycle = firstCycle; cycle <= lastCycle + 5; ++cycle) { // Dibujar etiquetas hasta el final de la escena + margen
-             auto *text = scene->addSimpleText(QString::number(cycle));
-             text->setPos(cycle * cycleWidth, -20); // Posicionar etiquetas sobre las barras
-         }
-     }
+    // Dibujar etiquetas de ciclo
+    if (!timeline.isEmpty()) {
+        int firstCycle = timeline.constBegin().key();
+        int lastCycle = (timeline.constEnd() - 1).key();
+        for (int cycle = firstCycle; cycle <= lastCycle + 5; ++cycle) {
+            auto *text = scene->addSimpleText(QString::number(cycle));
+            text->setPos(cycle * cycleWidth, -20);
+        }
+    }
 
-    // Opcional: destacar ciclo actual con línea vertical
-    if (!timeline.isEmpty()) { // Asegurarse de que hay timeline antes de dibujar linea de tiempo actual
-       int firstCycle = timeline.constBegin().key();
-       int xCurrent = (currentTime - firstCycle) * cycleWidth; // Posicion x relativa al inicio del timeline
-        scene->addLine(xCurrent, -30, xCurrent, y + cycleHeight + 10, // Ajustar y para cubrir etiquetas y barras
-                     QPen(Qt::red, 2));
+    // Dibujar línea del tiempo actual
+    if (!timeline.isEmpty()) {
+        int firstCycle = timeline.constBegin().key();
+        int xCurrent = (currentTime - firstCycle) * cycleWidth;
+        scene->addLine(xCurrent, -30, xCurrent, y + cycleHeight + 10,
+                     QPen(Qt::blue, 2));
     }
 }

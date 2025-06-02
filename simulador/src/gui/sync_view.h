@@ -33,6 +33,11 @@ public:
     // ——— Métodos para la GUI
     QMap<int, QString> getTimeline() const;
     int getCurrentTime() const;
+    
+    // Getters para el tamaño de las colecciones
+    size_t getProcessesSize() const { return processes.size(); }
+    size_t getResourcesSize() const { return resources.size(); }
+    size_t getActionsSize() const { return actions.size(); }
 
 private:
     void createSyncMechanism();

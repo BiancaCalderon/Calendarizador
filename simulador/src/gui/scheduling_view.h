@@ -31,6 +31,9 @@ public:
     QMap<int, QString> getTimeline() const;
     int getCurrentTime() const;
     bool isSimulationCompleted() const;
+    
+    // Getter para el tamaño de la colección de procesos
+    size_t getProcessesSize() const { return processes.size(); }
 
 private:
     void createScheduler();

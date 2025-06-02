@@ -17,10 +17,11 @@ bool SyncView::loadFiles(const std::string& processFile,
         resources = FileLoader::loadResources(resourceFile);
         actions   = FileLoader::loadActions(actionFile);
         reset();
-        std::cout << "Archivos cargados con éxito.\n"
-                  << "Procesos: " << processes.size()
-                  << ", Recursos: " << resources.size()
-                  << ", Acciones: " << actions.size() << std::endl;
+        std::cout << "\n=== Archivos cargados exitosamente ===\n"
+                  << "✓ Procesos: " << processes.size() << " procesos cargados\n"
+                  << "✓ Recursos: " << resources.size() << " recursos disponibles\n"
+                  << "✓ Acciones: " << actions.size() << " acciones programadas\n"
+                  << "=====================================\n" << std::endl;
         return true;
     } catch (const std::exception& e) {
         std::cerr << "Error al cargar archivos: " << e.what() << std::endl;

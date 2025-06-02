@@ -81,10 +81,26 @@ void MainWindow::onFilesLoaded(const QString &proc,
     bool ok = false;
     if (modeCombo->currentIndex() == 0) {
         ok = schedulingView.loadProcessFile(proc.toStdString());
+        if (ok) {
+            QMessageBox::information(this, "Carga Exitosa", 
+                QString("✓ Archivo de procesos cargado exitosamente\n"
+                       "✓ %1 procesos cargados")
+                .arg(schedulingView.getProcessesSize()));
+        }
     } else {
         ok = syncView.loadFiles(proc.toStdString(),
                                 res.toStdString(),
                                 act.toStdString());
+        if (ok) {
+            QMessageBox::information(this, "Carga Exitosa", 
+                QString("✓ Archivos cargados exitosamente\n\n"
+                       "✓ %1 procesos cargados\n"
+                       "✓ %2 recursos disponibles\n"
+                       "✓ %3 acciones programadas")
+                .arg(syncView.getProcessesSize())
+                .arg(syncView.getResourcesSize())
+                .arg(syncView.getActionsSize()));
+        }
     }
     if (!ok) {
         QMessageBox::warning(this, "Error", "No se pudieron cargar los archivos.");

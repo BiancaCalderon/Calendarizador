@@ -14,8 +14,9 @@ bool SchedulingView::loadProcessFile(const std::string& filename) {
     try {
         processes = FileLoader::loadProcesses(filename);
         reset();
-        std::cout << "Archivo de procesos cargado con éxito: "
-                  << processes.size() << " procesos.\n";
+        std::cout << "\n=== Archivo de procesos cargado exitosamente ===\n"
+                  << "✓ " << processes.size() << " procesos cargados\n"
+                  << "=============================================\n" << std::endl;
         return true;
     } catch (const std::exception& e) {
         std::cerr << "Error al cargar el archivo de procesos: "

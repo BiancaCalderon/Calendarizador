@@ -40,6 +40,7 @@ private slots:
                        const QString &act);
     void onAlgorithmChanged(int idx);
     void onQuantumChanged(int q);
+    void onSyncMechanismChanged(int index);
     void onStartClicked();
     void onPauseClicked();
     void onStepClicked();

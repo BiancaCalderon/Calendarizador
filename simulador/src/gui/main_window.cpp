@@ -50,6 +50,8 @@ void MainWindow::connectSignals() {
             this, &MainWindow::onAlgorithmChanged);
     connect(algoConfig, &AlgorithmConfigWidget::quantumChanged,
             this, &MainWindow::onQuantumChanged);
+    connect(algoConfig, &AlgorithmConfigWidget::syncMechanismChanged,
+            this, &MainWindow::onSyncMechanismChanged);
 
     connect(controlPanel, &ControlPanelWidget::startClicked,
             this, &MainWindow::onStartClicked);
@@ -113,6 +115,10 @@ void MainWindow::onAlgorithmChanged(int idx) {
 
 void MainWindow::onQuantumChanged(int q) {
     schedulingView.setQuantum(q);
+}
+
+void MainWindow::onSyncMechanismChanged(int index) {
+    syncView.setSyncMechanism(static_cast<SyncMechanismType>(index));
 }
 
 void MainWindow::onStartClicked() {

@@ -13,6 +13,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTimer>
+#include <QTextEdit>
 
 #include "../scheduling/scheduler.h"
 #include "../scheduling/fifo.h"
@@ -65,6 +66,7 @@ private:
     ControlPanelWidget   *controlPanel;    // Start, Pause, Step, Reset, Speed
     MetricsPanelWidget   *metricsPanel;    // Labels para métricas
     GanttChartWidget     *ganttWidget;     // Zona de dibujo
+    QTextEdit           *eventHistoryBox;   // Nuevo: historial textual de eventos
 
     // Backend views
     SchedulingView        schedulingView;

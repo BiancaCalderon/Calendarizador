@@ -12,6 +12,7 @@
 #include "../synchronization/sync_mechanism.h"
 #include "../synchronization/mutex.h"
 #include "../synchronization/semaphore.h"
+#include <QStringList>
 
 enum class SyncMechanismType {
     MUTEX,
@@ -39,6 +40,9 @@ public:
     size_t getResourcesSize() const { return resources.size(); }
     size_t getActionsSize() const { return actions.size(); }
 
+    // Nuevo: obtener historial textual de eventos
+    QStringList getEventHistory() const;
+
 private:
     void createSyncMechanism();
 
@@ -52,6 +56,9 @@ private:
     // ——— Estado interno para la GUI
     std::map<int, std::string> lastTimeline;
     int lastTime = 0;
+
+    // Nuevo: historial textual de eventos
+    QStringList eventHistory;
 };
 
 #endif

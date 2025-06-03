@@ -28,6 +28,11 @@ void MainWindow::setupUi() {
     controlPanel = new ControlPanelWidget();
     metricsPanel = new MetricsPanelWidget();
     ganttWidget  = new GanttChartWidget();
+    eventHistoryBox = new QTextEdit();
+    eventHistoryBox->setReadOnly(true);
+    eventHistoryBox->setMinimumHeight(120);
+    eventHistoryBox->setFontFamily("monospace");
+    eventHistoryBox->hide(); // Solo mostrar en modo sincronización
 
     mainLayout->addWidget(modeCombo);
     mainLayout->addWidget(loaderWidget);
@@ -35,6 +40,7 @@ void MainWindow::setupUi() {
     mainLayout->addWidget(controlPanel);
     mainLayout->addWidget(metricsPanel);
     mainLayout->addWidget(ganttWidget);
+    mainLayout->addWidget(eventHistoryBox);
 
     setCentralWidget(centralWidget);
 }
@@ -74,6 +80,10 @@ void MainWindow::onModeChanged(int index) {
     schedulingView.reset(); 
     syncView.reset();
     simulationTimer->stop(); // Detener simulación automática al cambiar de modo
+    eventHistoryBox->setVisible(index == 1); // Mostrar solo en modo sincronización
+    if (index == 1) {
+        eventHistoryBox->clear();
+    }
 }
 
 void MainWindow::onFilesLoaded(const QString &proc,
@@ -196,6 +206,7 @@ void MainWindow::executeSimulationStep() {
         ganttWidget->updateTimeline(
             syncView.getTimeline(),
             syncView.getCurrentTime());
+        eventHistoryBox->setPlainText(syncView.getEventHistory().join("\n"));
 
         if (syncView.isSimulationCompleted()) {
             QMessageBox::information(this, "Simulación Terminada", "La simulación de sincronización ha completado.");

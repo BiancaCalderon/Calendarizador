@@ -58,6 +58,66 @@ void SyncView::step() {
 
     // Actualiza bandera de fin
     simulationCompleted = syncMechanism->isSimulationFinished();
+
+    // === Mejorado: Actualizar historial textual detallado ===
+    eventHistory.clear();
+    for (int ciclo = 0; ciclo < lastTime; ++ciclo) {
+        for (const auto& act : actions) {
+            if (act.getCycle() == ciclo) {
+                // Buscar el estado real de la acción en pendingActions o completedActions
+                QString estadoAccion = "WAITING";
+                // Buscar en completedActions primero
+                auto itComp = std::find_if(syncMechanism->getCompletedActions().begin(), syncMechanism->getCompletedActions().end(),
+                    [&](const Action& a) {
+                        return a.getProcessId() == act.getProcessId() &&
+                               a.getResourceName() == act.getResourceName() &&
+                               a.getCycle() == act.getCycle();
+                    });
+                if (itComp != syncMechanism->getCompletedActions().end()) {
+                    estadoAccion = "ACCESSED";
+                } else {
+                    // Buscar en pendingActions si está en ACCESSED
+                    auto itPend = std::find_if(syncMechanism->getPendingActions().begin(), syncMechanism->getPendingActions().end(),
+                        [&](const Action& a) {
+                            return a.getProcessId() == act.getProcessId() &&
+                                   a.getResourceName() == act.getResourceName() &&
+                                   a.getCycle() == act.getCycle() &&
+                                   a.getStatus() == ActionStatus::ACCESSED;
+                        });
+                    if (itPend != syncMechanism->getPendingActions().end()) {
+                        estadoAccion = "ACCESSED";
+                    }
+                }
+
+                // Estado del recurso
+                QString recurso = QString::fromStdString(act.getResourceName());
+                QString recursoEstado;
+                auto resIt = std::find_if(resources.begin(), resources.end(), [&](const Resource& r){ return r.getName() == act.getResourceName(); });
+                if (resIt != resources.end()) {
+                    int disp = resIt->getAvailableCount();
+                    if (disp > 0) {
+                        recursoEstado = QString("%1 disponible").arg(recurso);
+                    } else {
+                        QString duenio = "-";
+                        const auto& cola = resIt->getAccessQueue();
+                        if (!cola.empty()) {
+                            duenio = QString::fromStdString(cola.front());
+                        }
+                        recursoEstado = QString("%1 ocupado por %2").arg(recurso, duenio);
+                    }
+                }
+
+                QString linea = QString("Ciclo %1: %2 %3 %4 → %5 (%6)")
+                    .arg(ciclo)
+                    .arg(QString::fromStdString(act.getProcessId()))
+                    .arg(QString::fromStdString(Action::actionTypeToString(act.getType())))
+                    .arg(recurso)
+                    .arg(estadoAccion)
+                    .arg(recursoEstado);
+                eventHistory << linea;
+            }
+        }
+    }
 }
 
 bool SyncView::isSimulationCompleted() const {
@@ -76,6 +136,10 @@ QMap<int, QString> SyncView::getTimeline() const {
 
 int SyncView::getCurrentTime() const {
     return lastTime;
+}
+
+QStringList SyncView::getEventHistory() const {
+    return eventHistory;
 }
 
 void SyncView::createSyncMechanism() {

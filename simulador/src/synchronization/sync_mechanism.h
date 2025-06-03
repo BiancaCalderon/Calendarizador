@@ -43,6 +43,10 @@ public:
     
     virtual void reset();
     
+    // Getters para acciones pendientes y completadas
+    const std::vector<Action>& getPendingActions() const { return pendingActions; }
+    const std::vector<Action>& getCompletedActions() const { return completedActions; }
+    
 protected:
     // Actualizar acciones pendientes para el tiempo actual
     virtual void updatePendingActions();

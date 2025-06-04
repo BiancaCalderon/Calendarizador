@@ -165,6 +165,7 @@ void MainWindow::onResetClicked() {
     ganttWidget->reset();
     simulationTimer->stop();
     controlPanel->setRunning(false);
+    eventHistoryBox->clear();
     stepCounter = 0; // Reiniciar contador de pasos
 }
 
